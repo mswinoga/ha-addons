@@ -11,8 +11,8 @@ MQTT_PASSWORD = os.environ["MQTT_PASSWORD"]
 
 
 #MQTT_SERVER_HOST = "192.168.210.7"
-MQTT_AVAILABILITY_TOPIC = CONFIG.get("availability_topic", "plc/availability")
-MQTT_CLIENT_NAME = CONFIG.get("mqtt_client_name", "modbus-gateway")
+MQTT_AVAILABILITY_TOPIC = "plc/availability"
+MQTT_CLIENT_NAME = "modbus-gateway"
 
 #MQTT_USERNAME = "mosquitto-modbus-gw"
 #MQTT_PASSWORD = "YVz4Bcqen2sZaL"
