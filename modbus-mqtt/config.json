@@ -11,6 +11,6 @@
     "modbus_port": "502",
     "entity_sets": []
   },
-  "services": ["mqtt"],
+  "services": ["mqtt:need"],
   "schema": {}
 }
