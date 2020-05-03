@@ -1,11 +1,17 @@
 {
   "name": "Modbus-MQTT",
-  "version": "0.4",
+  "version": "0.5",
   "slug": "modbus-mqtt",
   "description": "Integrates modbus inputs/outputs with MQTT",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
   "startup": "before",
   "boot": "auto",
-  "options": {},
+  "options": {
+    "availability_topic": "plc/availability",
+    "mqtt_client_name": "modbus-mqtt-gateway",
+    "modbus_host": "192.168.210.22",
+    "modbus_port": "502",
+    "entity_sets": []
+  },
   "schema": {}
 }

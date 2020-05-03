@@ -1,7 +1,7 @@
 import json
 import logging
 
-from const import DISCOVERY_PREFIX, MQTT_AVAILABILITY_TOPIC
+from config import DISCOVERY_PREFIX, MQTT_AVAILABILITY_TOPIC
 from abc import ABC, ABCMeta, abstractmethod
 
 logger = logging.getLogger('entity')

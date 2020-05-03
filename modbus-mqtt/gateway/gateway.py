@@ -7,26 +7,26 @@ import threading
 import queue
 import time
 
-import const
+import config
 import entity
 
 logger = logging.getLogger('gateway')
 logger.setLevel(logging.DEBUG)
 
 # MODBUS
-modbus_udp_client = ModbusUdpClient(const.MODBUS_SERVER_HOST)
-modbus_tcp_client = ModbusTcpClient(const.MODBUS_SERVER_HOST)
+modbus_udp_client = ModbusUdpClient(config.MODBUS_SERVER_HOST)
+modbus_tcp_client = ModbusTcpClient(config.MODBUS_SERVER_HOST)
 
 # MQTT
-mqtt_client = mqtt.Client(const.MQTT_CLIENT_NAME)
+mqtt_client = mqtt.Client(config.MQTT_CLIENT_NAME)
 mqtt_client.is_connected = False
-mqtt_client.username_pw_set(username=const.MQTT_USERNAME, password=const.MQTT_PASSWORD)
+mqtt_client.username_pw_set(username=config.MQTT_USER, password=config.MQTT_PASSWORD)
 
 # last will
-mqtt_client.will_set(const.MQTT_AVAILABILITY_TOPIC, "offline", retain=True)
+mqtt_client.will_set(config.MQTT_AVAILABILITY_TOPIC, "offline", retain=True)
 
 # connect, loop_start will handle reconnections
-mqtt_client.connect(const.MQTT_SERVER_HOST)
+mqtt_client.connect(config.MQTT_HOST)
 mqtt_client.loop_start()
 
 
@@ -40,7 +40,7 @@ class Gateway(entity.GatewayInterface):
 
         # mqtt init
         logger.debug("gateway sending availability message")
-        mqtt_client.publish(const.MQTT_AVAILABILITY_TOPIC, "online")
+        mqtt_client.publish(config.MQTT_AVAILABILITY_TOPIC, "online")
 
     # GatewayInterface
     def mqtt_publish(self, topic, payload, retain=False):

@@ -1,0 +1,26 @@
+import json
+import os
+
+CONFIG_PATH = os.environ["CONFIG_PATH"]
+with open(CONFIG_PATH) as json_file:
+    CONFIG = json.load(json_file)
+
+MQTT_HOST = os.environ["MQTT_HOST"]
+MQTT_USER = os.environ["MQTT_USER"]
+MQTT_PASSWORD = os.environ["MQTT_PASSWORD"]
+
+
+#MQTT_SERVER_HOST = "192.168.210.7"
+MQTT_AVAILABILITY_TOPIC = CONFIG.get("availability_topic", "plc/availability")
+MQTT_CLIENT_NAME = CONFIG.get("mqtt_client_name", "modbus-gateway")
+
+#MQTT_USERNAME = "mosquitto-modbus-gw"
+#MQTT_PASSWORD = "YVz4Bcqen2sZaL"
+
+DISCOVERY_PREFIX = CONFIG.get("discovery_prefix", "homeassistant")
+
+MODBUS_SERVER_HOST = CONFIG.get("modbus_host", "192.168.210.22")
+MODBUS_SERVER_PORT = int(CONFIG.get("modbus_port", 502))
+
+ENTITY_SETS = CONFIG.get("entity_sets", [])
+
