@@ -40,4 +40,4 @@ gw.register_entity_set(
 while True:
     gw.modbus_step()
     time.sleep(0.005)
-    
+
