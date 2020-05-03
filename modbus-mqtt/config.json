@@ -8,8 +8,20 @@
   "boot": "auto",
   "options": {
     "modbus_host": "192.168.210.22",
-    "modbus_port": "502",
-    "entity_sets": []
+    "modbus_port": 502,
+    "entity_sets": [
+      {
+        "name": "do",
+        "entity_type": "BlindEntity",
+        "entity_count": 20,
+        "data_unit": "register",
+        "data_size": 2,
+        "read_only": false,
+        "read_offset": 0,
+        "write_offset": 0,
+        "poll_delay_ms": 750
+      }
+    ]
   },
   "services": ["mqtt:need"],
   "schema": {}

@@ -7,10 +7,6 @@ import logging
 logger = logging.getLogger('runner')
 logger.setLevel(logging.DEBUG)
 
-input_class = ModbusClass("di")
-meter_class = ModbusClass("meter", read_offset=112)
-relay_class = ModbusClass("do", read_offset=512, write_supported=True)
-
 gw = Gateway()
 gw.register_entity_set(
     ModbusClass("di"),

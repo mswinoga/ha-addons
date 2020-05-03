@@ -55,16 +55,18 @@ class Gateway(entity.GatewayInterface):
     def modbus_write_coils(self, address, data):
         logger.debug("modbus_write_coils({}, {})".format(address, data))
         if isinstance(data, list):
-            modbus_tcp_client.write_coils(address, data, len(data))
+            res = modbus_tcp_client.write_coils(address, data, len(data))
         else:
-            modbus_tcp_client.write_coil(address, data)
+            res = modbus_tcp_client.write_coil(address, data)
+        logger.debug("  result: {}".format(res))
 
     def modbus_write_registers(self, address, data):
         logger.debug("modbus_write_registers({}, {})".format(address, data))
         if isinstance(data, list):
-            modbus_tcp_client.write_registers(address, data)
+            res = modbus_tcp_client.write_registers(address, data)
         else:
-            modbus_tcp_client.write_register(address, data)
+            res = modbus_tcp_client.write_register(address, data)
+        logger.debug("  result: {}".format(res))
 
     # internal methods
     def __process_entities(self, entities, time_wait, previous_timestamp):
