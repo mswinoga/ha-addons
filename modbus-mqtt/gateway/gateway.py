@@ -37,7 +37,7 @@ mqtt_client.loop_start()
 
 def modbus_execute(request):
     with modbus_lock:
-        if not modbus_tcp_client.is_socket_connected():
+        if not modbus_tcp_client.is_socket_open():
             modbus_tcp_client.connect()
 
         ret = modbus_tcp_client.execute(request)
