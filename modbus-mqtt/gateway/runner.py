@@ -24,7 +24,7 @@ gw = Gateway()
             write_offset=entity.get("write_offset", 0),
             read_only=entity.get("read_only", True),
             data_type=entity.get("data_type"),
-            data_size=entity.get("data_size")
+            data_size=entity.get("data_size", 1)
         ),
         entity_classes.get(entity.get("entity_type"), None),
         entity.get("entity_count", 1),
