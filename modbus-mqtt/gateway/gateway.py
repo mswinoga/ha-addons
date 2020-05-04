@@ -19,13 +19,11 @@ logger = logging.getLogger('gateway')
 logger.setLevel(logging.DEBUG)
 
 # MODBUS
-modbus_lock = threading.Lock()
 modbus_udp_client = ModbusUdpClient(config.MODBUS_SERVER_HOST)
 modbus_tcp_client = ModbusTcpClient(config.MODBUS_SERVER_HOST)
 
 # MQTT
 mqtt_client = mqtt.Client(config.MQTT_CLIENT_NAME)
-mqtt_client.is_connected = False
 mqtt_client.username_pw_set(username=config.MQTT_USER, password=config.MQTT_PASSWORD)
 
 # last will
@@ -36,15 +34,14 @@ mqtt_client.connect(config.MQTT_HOST)
 mqtt_client.loop_start()
 
 def modbus_execute(request):
-    with modbus_lock:
-        if not modbus_tcp_client.is_socket_open():
-            modbus_tcp_client.connect()
+    if not modbus_tcp_client.is_socket_open():
+        modbus_tcp_client.connect()
 
-        ret = modbus_tcp_client.execute(request)
-        if ret.isError():
-            ret = modbus_tcp_client.execute(request) # retry
+    ret = modbus_tcp_client.execute(request)
+    if ret.isError():
+        ret = modbus_tcp_client.execute(request) # retry
 
-        return ret
+    return ret
 
 def modbus_write_coils(address, data):
     logger.debug("modbus_write_coils({}, {})".format(address, data))
