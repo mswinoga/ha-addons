@@ -1,4 +1,9 @@
 from pymodbus.client.sync import ModbusTcpClient, ModbusUdpClient
+from pymodbus.bit_read_message import *
+from pymodbus.bit_write_message import *
+from pymodbus.register_read_message import *
+from pymodbus.register_write_message import *
+
 import paho.mqtt.client as mqtt
 
 from functools import partial
@@ -30,34 +35,34 @@ mqtt_client.will_set(config.MQTT_AVAILABILITY_TOPIC, "offline", retain=True)
 mqtt_client.connect(config.MQTT_HOST)
 mqtt_client.loop_start()
 
-def modbus_execute(fn):
+def modbus_execute(request):
     with modbus_lock:
-        ret = fn()
+        if not modbus_tcp_client.is_socket_connected():
+            modbus_tcp_client.connect()
+
+        ret = modbus_tcp_client.execute(request)
         if ret.isError():
-            ret = fn() # retry
+            ret = modbus_tcp_client.executerequest) # retry
 
         return ret
 
 def modbus_write_coils(address, data):
     logger.debug("modbus_write_coils({}, {})".format(address, data))
 
-    with modbus_lock:
-        if isinstance(data, list):
-            return modbus_execute(
-                partial(modbus_tcp_client.write_coils, address, data, len(data))
-            )
-        else:
-            return modbus_execute(
-                partial(modbus_tcp_client.write_coil, address, data)
-            )
+    if isinstance(data, list):
+        request = WriteMultipleCoilsRequest(address, data)
+    else:
+        request = WriteSingleCoilRequest(address, data)
+    modbus_execute(request)
 
 def modbus_write_registers(address, data):
     logger.debug("modbus_write_registers({}, {})".format(address, data))
-    with modbus_lock:
-        if isinstance(data, list):
-            return modbus_tcp_client.write_registers(address, data)
-        else:
-            return modbus_tcp_client.write_register(address, data)
+
+    if isinstance(data, list):
+        request = WriteMultipleRegistersRequest(address, data)
+    else:
+        request = WriteSingleRegisterRequest(address, data)
+    modbus_execute(request)
 
 class Gateway(entity.GatewayInterface):
     
