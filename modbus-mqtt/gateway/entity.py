@@ -286,10 +286,10 @@ class BlindEntity(Entity):
         if modbus_class.data_size != 2:
             raise Exception("BlindEntity only supports two word data size: {}".format(modbus_class))
 
-        self.pos = 0
+        self.pos = None
         self.target = 0
-        self.t_up = 0
-        self.t_dn = 0
+        self.t_up = None
+        self.t_dn = None
 
     def initialize(self):
         super(BlindEntity, self).initialize()
