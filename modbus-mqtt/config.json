@@ -1,6 +1,6 @@
 {
   "name": "Modbus-MQTT",
-  "version": "0.25",
+  "version": "0.26",
   "slug": "modbus-mqtt",
   "description": "Integrates modbus inputs/outputs with MQTT",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
@@ -20,11 +20,12 @@
       },
       {
         "set_id": "meter",
-        "entity_type": "binary_input",
+        "entity_type": "sensor",
         "entity_count": 8,
-        "data_type": "coil",
-        "read_offset": 112,
-        "poll_delay_ms": 20
+        "data_type": "register",
+        "data_size": 2,
+        "read_offset": 12320,
+        "poll_delay_ms": 10000
       },
       {
         "set_id": "blind",

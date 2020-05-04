@@ -272,6 +272,70 @@ class LightRelayEntity(BitOutputEntity):
     def discovery_component(self):
         return "light"
 
+class SensorEntity(Entity):
+
+    def __init__(self, gateway, modbus_class, modbus_idx):
+        super(SensorEntity, self).__init__(
+            gateway,
+            modbus_class=modbus_class,
+            modbus_idx=modbus_idx
+        )
+
+        if modbus_class.data_type != TYPE_REGISTER:
+            raise Exception("BlindEntity only supports word data format")
+        if modbus_class.data_size > 2:
+            raise Exception("BlindEntity only supports up to two word data size: {}".format(modbus_class))
+
+    def initialize(self):
+        super(SensorEntity, self).initialize()
+        if not self.modbus_class.read_only:
+            self.gateway.mqtt_subscribe(self.mqtt_topic("set"), self.on_mqtt_set)
+
+    def on_mqtt_set(self, msg):
+        payload = msg.payload.decode('utf-8')
+        try:
+            value = int(payload)
+            if self.modbus_class.data_size == 1:
+                encoded = [value]
+            else:
+                encoded = [value & 0xFFFF, (value >> 16) & 0xFFFF]
+            self.gateway.modbus_write_registers(self.modbus_write_address, encoded)
+        except:
+            logger.warn("SensorEntity operation not supported: {}".format(payload))
+
+
+    def process_modbus_data(self, timestamp, data):
+
+        # store current value
+        if self.modbus_class.data_size == 1:
+            value = data[0]
+        else:
+            value = (data[1]<<16)+data[0]
+
+        if value != self.state:
+            self.gateway.mqtt_publish(self.mqtt_topic(Entity.TOPIC_STATUS), value)
+            self.state = value
+
+    @property
+    def discovery_component(self):
+        return "sensor"
+
+    @property
+    def discovery_payload(self):
+        return json.dumps({
+                "~": self.mqtt_topic_base,
+                "name": "{} {}".format(self.discovery_component, self.modbus_idx),
+                "unique_id": self.discovery_uid,
+                "availability_topic": MQTT_AVAILABILITY_TOPIC,
+                "state_topic": Entity.TOPIC_STATUS,
+                "unit_of_measurement": 'Wh'
+            })
+
+    @property
+    def mqtt_coordinate(self):
+        return self.modbus_class.mqtt_coordinate(self.modbus_idx, slot_size=8)
+
+
 class BlindEntity(Entity):
 
     def __init__(self, gateway, modbus_class, modbus_idx):

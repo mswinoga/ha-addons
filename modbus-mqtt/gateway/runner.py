@@ -1,4 +1,4 @@
-from entity import ModbusClass, BlindEntity, BitEntity, ButtonEntity, LightRelayEntity
+from entity import ModbusClass, BlindEntity, BitEntity, ButtonEntity, LightRelayEntity, SensorEntity
 from gateway import Gateway
 from config import ENTITY_SETS
 
@@ -9,7 +9,8 @@ entity_classes = {
     "binary_input": BitEntity,
     "button": BitEntity,
     "blind": BlindEntity,
-    "light_relay": LightRelayEntity
+    "light_relay": LightRelayEntity,
+    "sensor": SensorEntity
 }
 
 # the gateway object
