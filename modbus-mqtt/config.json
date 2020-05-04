@@ -1,11 +1,12 @@
 {
   "name": "Modbus-MQTT",
-  "version": "0.17",
+  "version": "0.18",
   "slug": "modbus-mqtt",
   "description": "Integrates modbus inputs/outputs with MQTT",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
   "startup": "before",
   "boot": "auto",
+  "services": ["mqtt:need"],
   "options": {
     "modbus_host": "192.168.210.22",
     "modbus_port": 502,
@@ -57,6 +58,20 @@
       }
     ]
   },
-  "services": ["mqtt:need"],
-  "schema": {}
+  "schema": {
+    "modbus_host": "str",
+    "modbus_port": "int",
+    "entity_sets": [
+      {
+        "set_id": "str",
+        "entity_type": "str",
+        "entity_count": "int",
+        "data_type": "str",
+        "read_only": "bool",
+        "read_offset": "int",
+        "write_offset": "int",
+        "poll_delay_ms": "int"
+      }
+    ]
+  }
 }

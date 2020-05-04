@@ -2,14 +2,14 @@ import logging
 import json
 import os
 
-logger = logging.getLogger('gateway')
+logger = logging.getLogger('config')
 logger.setLevel(logging.DEBUG)
 
 CONFIG_PATH = os.environ["CONFIG_PATH"]
 with open(CONFIG_PATH) as json_file:
     CONFIG = json.load(json_file)
 
-logger.info("reading configuration from {}: {}".format(CONFIG_PATH, CONFIG))
+logger.debug("reading configuration from {}: {}".format(CONFIG_PATH, CONFIG))
 
 MQTT_HOST = os.environ["MQTT_HOST"]
 MQTT_USER = os.environ["MQTT_USER"]
@@ -30,3 +30,5 @@ MODBUS_SERVER_PORT = int(CONFIG.get("modbus_port", 502))
 
 ENTITY_SETS = CONFIG.get("entity_sets", [])
 
+
+print ("###################### {}".format(ENTITY_SETS))
