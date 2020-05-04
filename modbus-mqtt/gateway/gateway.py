@@ -14,6 +14,7 @@ logger = logging.getLogger('gateway')
 logger.setLevel(logging.DEBUG)
 
 # MODBUS
+modbus_lock = threading.Lock()
 modbus_udp_client = ModbusUdpClient(config.MODBUS_SERVER_HOST)
 modbus_tcp_client = ModbusTcpClient(config.MODBUS_SERVER_HOST)
 
@@ -29,6 +30,21 @@ mqtt_client.will_set(config.MQTT_AVAILABILITY_TOPIC, "offline", retain=True)
 mqtt_client.connect(config.MQTT_HOST)
 mqtt_client.loop_start()
 
+def modbus_write_coils(self, address, data):
+    logger.debug("modbus_write_coils({}, {})".format(address, data))
+    with modbus_lock:
+        if isinstance(data, list):
+            return modbus_tcp_client.write_coils(address, data, len(data))
+        else:
+            return modbus_tcp_client.write_coil(address, data)
+
+def modbus_write_registers(self, address, data):
+    logger.debug("modbus_write_registers({}, {})".format(address, data))
+    with modbus_lock:
+        if isinstance(data, list):
+            return modbus_tcp_client.write_registers(address, data)
+        else:
+            return modbus_tcp_client.write_register(address, data)
 
 class Gateway(entity.GatewayInterface):
     
@@ -53,20 +69,10 @@ class Gateway(entity.GatewayInterface):
         mqtt_client.subscribe(topic)
 
     def modbus_write_coils(self, address, data):
-        logger.debug("modbus_write_coils({}, {})".format(address, data))
-        if isinstance(data, list):
-            res = modbus_tcp_client.write_coils(address, data, len(data))
-        else:
-            res = modbus_tcp_client.write_coil(address, data)
-        logger.debug("  result: {}".format(res))
+        return modbus_write_coils(address, data)
 
     def modbus_write_registers(self, address, data):
-        logger.debug("modbus_write_registers({}, {})".format(address, data))
-        if isinstance(data, list):
-            res = modbus_tcp_client.write_registers(address, data)
-        else:
-            res = modbus_tcp_client.write_register(address, data)
-        logger.debug("  result: {}".format(res))
+        return modbus_write_registers(address, data)
 
     # internal methods
     def __process_entities(self, entities, time_wait, previous_timestamp):
