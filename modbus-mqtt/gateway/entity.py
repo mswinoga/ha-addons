@@ -28,17 +28,20 @@ class GatewayInterface(metaclass=ABCMeta):
 
 class ModbusClass(object):
 
+    REGISTER = "register"
+    COIL = "coil"
+
     def __init__(self,
             name,
-            unit=1,
-            width=1,
+            data_type=ModbusClass.COIL,
+            data_size=1,
             read_offset=0,
             write_offset=0,
             read_supported=True,
             write_supported=False):
         self.name = name
-        self.unit = unit
-        self.width = width
+        self.data_type = data_type
+        self.data_size = data_size
         self.read_offset = read_offset
         self.write_offset = write_offset
         self.read_supported = read_supported
@@ -75,9 +78,9 @@ class Entity(ABC):
         self.initialize()
 
     def initialize(self):
-        data_unit = self.modbus_class.unit
-        if data_unit not in [1, 16]:
-            raise Exception("Data unit not supported: {}".format(data_unit))
+        data_type = self.modbus_class.data_type
+        if data_type not in [ModbusClass.REGISTER, ModbusClass.COIL]:
+            raise Exception("Data class not supported: {}".format(data_type))
 
         # send discovery info to mqtt
         topic = self.discovery_topic
@@ -95,7 +98,7 @@ class Entity(ABC):
 
     @property
     def modbus_write_address(self):
-        return self.modbus_idx*self.modbus_class.width+self.modbus_class.write_offset
+        return self.modbus_idx*self.modbus_class.data_sizdata_size+self.modbus_class.write_offset
         
     @property
     def mqtt_coordinate(self):
@@ -128,7 +131,7 @@ class Entity(ABC):
         return topic
 
     def on_modbus_data(self, timestamp, data):
-        if len(data) != self.modbus_class.width:
+        if len(data) != self.modbus_class.data_size:
             raise Exception("data lenght is supported: {}".format(data))
 
         self.process_modbus_data(timestamp, data)
@@ -269,10 +272,10 @@ class BlindEntity(Entity):
             modbus_idx=modbus_idx
         )
 
-        if modbus_class.unit != 16:
+        if modbus_class.data_type != ModbusClass.REGISTER:
             raise Exception("BlindEntity only supports word data format")
-        if modbus_class.width != 2:
-            raise Exception("BlindEntity only supports two word data width")
+        if modbus_class.data_size != 2:
+            raise Exception("BlindEntity only supports two word data size")
 
         self.pos = 0
         self.target = 0

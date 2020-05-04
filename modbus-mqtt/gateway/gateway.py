@@ -101,23 +101,23 @@ class Gateway(entity.GatewayInterface):
         if current_timestamp - previous_timestamp > time_wait:
             # get start address and how many bits need to be read
             modbus_class:entity.ModbusClass = entities[0].modbus_class
-            data_unit     = modbus_class.unit
-            data_width    = modbus_class.width
+            data_type     = modbus_class.data_type
+            data_size    = modbus_class.data_size
             start_address = modbus_class.read_offset
-            data_count    = data_width*len(entities)
+            data_count    = data_size*len(entities)
 
             # get the values via modbus 
-            if data_unit == 1:
+            if data_type == entity.ModbusClass.COIL:
                 values = modbus_udp_client.read_coils(start_address, data_count).bits
-            elif data_unit == 16:
+            elif data_type == entity.ModbusClass.REGISTER:
                 values = modbus_udp_client.read_holding_registers(start_address, data_count).registers
             else:
-                raise Exception("data unit not supported: {}".format(data_unit))
+                raise Exception("data type not supported: {}".format(data_type))
             
             # process entities
             idx = 0
             for e in entities:
-                new_idx = idx+data_width
+                new_idx = idx+data_size
                 e.on_modbus_data(current_timestamp, values[idx:new_idx])
                 idx = new_idx
 

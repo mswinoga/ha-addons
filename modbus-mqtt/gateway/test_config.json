@@ -1,7 +1,17 @@
 {
-  "availability_topic": "plc/availability",
-  "mqtt_client_name": "modbus-mqtt-gateway",
   "modbus_host": "192.168.210.22",
-  "modbus_port": "502",
-  "entity_sets": []
+  "modbus_port": 502,
+  "entity_sets": [
+    {
+      "name": "blind",
+      "entity_type": "BlindEntity",
+      "entity_count": 20,
+      "data_type": "register",
+      "data_size": 2,
+      "read_only": false,
+      "read_offset": 12544,
+      "write_offset": 12544,
+      "poll_delay_ms": 750
+    }
+  ]
 }

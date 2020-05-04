@@ -27,7 +27,7 @@ gw.register_entity_set(
     time_wait=250
 )
 gw.register_entity_set(
-    ModbusClass("blind", read_offset=0x3100, write_offset=0x3100, write_supported=True, width=2, unit=16),
+    ModbusClass("blind", read_offset=0x3100, write_offset=0x3100, write_supported=True, data_size=2, data_type=ModbusClass.REGISTER),
     BlindEntity,
     20,
     time_wait=750
