@@ -284,7 +284,7 @@ class BlindEntity(Entity):
         if modbus_class.data_type != TYPE_REGISTER:
             raise Exception("BlindEntity only supports word data format")
         if modbus_class.data_size != 2:
-            raise Exception("BlindEntity only supports two word data size")
+            raise Exception("BlindEntity only supports two word data size: {}".format(modbus_class))
 
         self.pos = 0
         self.target = 0
