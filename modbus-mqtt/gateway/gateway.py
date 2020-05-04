@@ -30,13 +30,26 @@ mqtt_client.will_set(config.MQTT_AVAILABILITY_TOPIC, "offline", retain=True)
 mqtt_client.connect(config.MQTT_HOST)
 mqtt_client.loop_start()
 
+def modbus_execute(fn):
+    with modbus_lock:
+        ret = fn()
+        if ret.isError():
+            ret = fn() # retry
+
+        return ret
+
 def modbus_write_coils(address, data):
     logger.debug("modbus_write_coils({}, {})".format(address, data))
+
     with modbus_lock:
         if isinstance(data, list):
-            return modbus_tcp_client.write_coils(address, data, len(data))
+            return modbus_execute(
+                partial(modbus_tcp_client.write_coils, address, data, len(data))
+            )
         else:
-            return modbus_tcp_client.write_coil(address, data)
+            return modbus_execute(
+                partial(modbus_tcp_client.write_coil, address, data)
+            )
 
 def modbus_write_registers(address, data):
     logger.debug("modbus_write_registers({}, {})".format(address, data))
