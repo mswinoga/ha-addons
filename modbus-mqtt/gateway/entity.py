@@ -327,7 +327,7 @@ class SensorEntity(Entity):
                 "name": "{} {}".format(self.discovery_component, self.modbus_idx),
                 "unique_id": self.discovery_uid,
                 "availability_topic": MQTT_AVAILABILITY_TOPIC,
-                "state_topic": Entity.TOPIC_STATUS,
+                "state_topic": "~/{}".format(Entity.TOPIC_STATUS),
                 "unit_of_measurement": 'Wh'
             })
 
