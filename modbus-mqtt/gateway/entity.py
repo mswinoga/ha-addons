@@ -26,26 +26,24 @@ class GatewayInterface(metaclass=ABCMeta):
         raise NotImplementedError
 
 
-class ModbusClass(object):
+TYPE_REGISTER = "register"
+TYPE_COIL = "coil"
 
-    REGISTER = "register"
-    COIL = "coil"
+class ModbusClass(object):
 
     def __init__(self,
             name,
-            data_type=ModbusClass.COIL,
+            data_type=TYPE_COIL,
             data_size=1,
             read_offset=0,
             write_offset=0,
-            read_supported=True,
-            write_supported=False):
+            read_only=True):
         self.name = name
         self.data_type = data_type
         self.data_size = data_size
         self.read_offset = read_offset
         self.write_offset = write_offset
-        self.read_supported = read_supported
-        self.write_supported = write_supported
+        self.read_only = read_only
 
     @abstractmethod
     def mqtt_coordinate(self, address, slot_size=8):
@@ -79,7 +77,7 @@ class Entity(ABC):
 
     def initialize(self):
         data_type = self.modbus_class.data_type
-        if data_type not in [ModbusClass.REGISTER, ModbusClass.COIL]:
+        if data_type not in [TYPE_REGISTER, TYPE_COIL]:
             raise Exception("Data class not supported: {}".format(data_type))
 
         # send discovery info to mqtt
@@ -150,7 +148,7 @@ class BitEntity(Entity):
 
         if new_val != self.state:
             # retain mqtt messages for outputs (with write operation supported)
-            retain = self.modbus_class.write_supported
+            retain = self.modbus_class.read_only
             value = "ON" if new_val else "OFF"
             self.gateway.mqtt_publish(
                 self.mqtt_topic(Entity.TOPIC_STATUS),
@@ -272,7 +270,7 @@ class BlindEntity(Entity):
             modbus_idx=modbus_idx
         )
 
-        if modbus_class.data_type != ModbusClass.REGISTER:
+        if modbus_class.data_type != TYPE_REGISTER:
             raise Exception("BlindEntity only supports word data format")
         if modbus_class.data_size != 2:
             raise Exception("BlindEntity only supports two word data size")

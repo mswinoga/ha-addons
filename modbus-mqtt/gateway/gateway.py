@@ -107,9 +107,9 @@ class Gateway(entity.GatewayInterface):
             data_count    = data_size*len(entities)
 
             # get the values via modbus 
-            if data_type == entity.ModbusClass.COIL:
+            if data_type == entity.TYPE_COIL:
                 values = modbus_udp_client.read_coils(start_address, data_count).bits
-            elif data_type == entity.ModbusClass.REGISTER:
+            elif data_type == entity.TYPE_REGISTER:
                 values = modbus_udp_client.read_holding_registers(start_address, data_count).registers
             else:
                 raise Exception("data type not supported: {}".format(data_type))
@@ -125,9 +125,9 @@ class Gateway(entity.GatewayInterface):
         else:
             return previous_timestamp
 
-    def register_entity_set(self, modbus_class: entity.ModbusClass, entity_type, item_count, time_wait=0):
+    def register_entity_set(self, modbus_class: entity.ModbusClass, entity_type, item_count, poll_delay_ms=0):
         entities = [entity_type(self, modbus_class, idx) for idx in range(0, item_count)]
-        self.processors.append( (0, partial(self.__process_entities, entities, time_wait)) )
+        self.processors.append( (0, partial(self.__process_entities, entities, poll_delay_ms)) )
 
     def modbus_step(self):
         self.processors = [(step(ts), step) for ts, step in self.processors]

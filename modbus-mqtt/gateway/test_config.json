@@ -3,8 +3,8 @@
   "modbus_port": 502,
   "entity_sets": [
     {
-      "name": "blind",
-      "entity_type": "BlindEntity",
+      "set_id": "blind",
+      "entity_type": "blind",
       "entity_count": 20,
       "data_type": "register",
       "data_size": 2,

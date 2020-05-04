@@ -1,38 +1,38 @@
 from entity import ModbusClass, BlindEntity, BitEntity, ButtonEntity, LightRelayEntity
 from gateway import Gateway
+from config import ENTITY_SETS
 
 import time
 import logging
 
-logger = logging.getLogger('runner')
-logger.setLevel(logging.DEBUG)
+entity_classes = {
+    "binary_input": BitEntity,
+    "button": BitEntity,
+    "blind": BlindEntity,
+    "light_relay": LightRelayEntity
+}
 
+# the gateway object
 gw = Gateway()
-gw.register_entity_set(
-    ModbusClass("di"),
-    ButtonEntity,
-    14*8,
-    time_wait=10
-)
-gw.register_entity_set(
-    ModbusClass("meter", read_offset=112),
-    BitEntity,
-    1*8,
-    time_wait=1000
-)
-gw.register_entity_set(
-    ModbusClass("do", read_offset=512, write_supported=True),
-    LightRelayEntity,
-    19*8,
-    time_wait=250
-)
-gw.register_entity_set(
-    ModbusClass("blind", read_offset=0x3100, write_offset=0x3100, write_supported=True, data_size=2, data_type=ModbusClass.REGISTER),
-    BlindEntity,
-    20,
-    time_wait=750
-)
 
+# register all entity sets
+[
+    gw.register_entity_set(
+        ModbusClass(
+            entity.get("set_id"),
+            read_offset=entity.get("read_offset", 0),
+            write_offset=entity.get("write_offset", 0),
+            read_only=entity.get("read_only", True),
+            data_type=entity.get("data_type"),
+            data_size=entity.get("data_size")
+        ),
+        entity_classes.get(entity.get("entity_type"), None),
+        entity.get("entity_count", 1),
+        poll_delay_ms=entity.get("poll_delay_ms", 250)
+    ) for entity in ENTITY_SETS
+]
+
+# run the gateway loop
 while True:
     gw.modbus_step()
     time.sleep(0.005)
