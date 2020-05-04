@@ -126,7 +126,7 @@ class Gateway(entity.GatewayInterface):
             return previous_timestamp
 
     def register_entity_set(self, modbus_class: entity.ModbusClass, entity_type, item_count, poll_delay_ms=0):
-        logger.info("registering modbus_class={}, entity_type={}, item_count={}".format(modbus_class, entity_type, item_count))
+        logger.debug("registering modbus_class={}, entity_type={}, item_count={}".format(modbus_class, entity_type, item_count))
         entities = [entity_type(self, modbus_class, idx) for idx in range(0, item_count)]
         self.processors.append( (0, partial(self.__process_entities, entities, poll_delay_ms)) )
 
