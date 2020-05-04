@@ -42,7 +42,7 @@ def modbus_execute(request):
 
         ret = modbus_tcp_client.execute(request)
         if ret.isError():
-            ret = modbus_tcp_client.executerequest) # retry
+            ret = modbus_tcp_client.execute(request) # retry
 
         return ret
 
