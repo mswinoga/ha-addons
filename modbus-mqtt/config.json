@@ -1,6 +1,6 @@
 {
   "name": "Modbus-MQTT",
-  "version": "0.22",
+  "version": "0.23",
   "slug": "modbus-mqtt",
   "description": "Integrates modbus inputs/outputs with MQTT",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
@@ -67,6 +67,7 @@
         "entity_type": "str",
         "entity_count": "int?",
         "data_type": "str",
+        "data_size": "int?",
         "read_only": "bool?",
         "read_offset": "int?",
         "write_offset": "int?",
