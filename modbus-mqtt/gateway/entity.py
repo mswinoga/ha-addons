@@ -107,7 +107,7 @@ class Entity(ABC):
 
     @property
     def modbus_write_address(self):
-        return self.modbus_idx*self.modbus_class.data_sizdata_size+self.modbus_class.write_offset
+        return self.modbus_idx*self.modbus_class.data_size+self.modbus_class.write_offset
         
     @property
     def mqtt_coordinate(self):
