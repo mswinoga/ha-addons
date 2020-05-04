@@ -46,7 +46,7 @@ class ModbusClass(object):
         self.read_only = read_only
 
     def __str__(self):
-        return "ModbusClass(name={}, data_type={}, data_size={}, read_offset={}, write_offset={}, read_only={}".format(
+        return "ModbusClass(name={}, data_type={}, data_size={}, read_offset={}, write_offset={}, read_only={})".format(
             self.name,
             self.data_type,
             self.data_size,

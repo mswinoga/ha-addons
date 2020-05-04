@@ -19,17 +19,17 @@ gw = Gateway()
 [
     gw.register_entity_set(
         ModbusClass(
-            entity.get("set_id"),
-            read_offset=entity.get("read_offset", 0),
-            write_offset=entity.get("write_offset", 0),
-            read_only=entity.get("read_only", True),
-            data_type=entity.get("data_type"),
-            data_size=entity.get("data_size", 1)
+            eset.get("set_id"),
+            read_offset=eset.get("read_offset", 0),
+            write_offset=eset.get("write_offset", 0),
+            read_only=eset.get("read_only", True),
+            data_type=eset.get("data_type"),
+            data_size=eset.get("data_size", 1)
         ),
-        entity_classes.get(entity.get("entity_type"), None),
-        entity.get("entity_count", 1),
-        poll_delay_ms=entity.get("poll_delay_ms", 250)
-    ) for entity in ENTITY_SETS
+        entity_classes.get(eset.get("entity_type"), None),
+        eset.get("entity_count", 1),
+        poll_delay_ms=eset.get("poll_delay_ms", 250)
+    ) for eset in ENTITY_SETS
 ]
 
 # run the gateway loop
