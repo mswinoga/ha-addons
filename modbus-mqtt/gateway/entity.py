@@ -81,10 +81,13 @@ class Entity(ABC):
         self.modbus_idx = modbus_idx
 
         # state data
-        self.state = None
+        self.reset()
 
         # initialize
         self.initialize()
+
+    def reset(self):
+        self.state = None
 
     def initialize(self):
         data_type = self.modbus_class.data_type
@@ -177,12 +180,9 @@ class ButtonEntity(BitEntity):
     CLICK_PAUSE_MAX = 250
     LONG_PRESS_MIN = 400
 
-    def __init__(self, gateway, modbus_class, modbus_idx):
-        super(ButtonEntity, self).__init__(
-            gateway,
-            modbus_class=modbus_class,
-            modbus_idx=modbus_idx
-        )
+    def reset(self):
+        super(ButtonEntity, self).reset()
+
         self.click_count = 0
         self.hold = False
         self.timestamp = 0
@@ -274,20 +274,14 @@ class LightRelayEntity(BitOutputEntity):
 
 class SensorEntity(Entity):
 
-    def __init__(self, gateway, modbus_class, modbus_idx):
-        super(SensorEntity, self).__init__(
-            gateway,
-            modbus_class=modbus_class,
-            modbus_idx=modbus_idx
-        )
-
-        if modbus_class.data_type != TYPE_REGISTER:
-            raise Exception("BlindEntity only supports word data format")
-        if modbus_class.data_size > 2:
-            raise Exception("BlindEntity only supports up to two word data size: {}".format(modbus_class))
-
     def initialize(self):
         super(SensorEntity, self).initialize()
+
+        if self.modbus_class.data_type != TYPE_REGISTER:
+            raise Exception("BlindEntity only supports word data format")
+        if self.modbus_class.data_size > 2:
+            raise Exception("BlindEntity only supports up to two word data size: {}".format(modbus_class))
+
         if not self.modbus_class.read_only:
             self.gateway.mqtt_subscribe(self.mqtt_topic("set"), self.on_mqtt_set)
 
@@ -338,17 +332,8 @@ class SensorEntity(Entity):
 
 class BlindEntity(Entity):
 
-    def __init__(self, gateway, modbus_class, modbus_idx):
-        super(BlindEntity, self).__init__(
-            gateway,
-            modbus_class=modbus_class,
-            modbus_idx=modbus_idx
-        )
-
-        if modbus_class.data_type != TYPE_REGISTER:
-            raise Exception("BlindEntity only supports word data format")
-        if modbus_class.data_size != 2:
-            raise Exception("BlindEntity only supports two word data size: {}".format(modbus_class))
+    def reset(self):
+        super(BlindEntity, self).reset()
 
         self.pos = None
         self.target = 0
@@ -357,6 +342,12 @@ class BlindEntity(Entity):
 
     def initialize(self):
         super(BlindEntity, self).initialize()
+
+        if self.modbus_class.data_type != TYPE_REGISTER:
+            raise Exception("BlindEntity only supports word data format")
+        if self.modbus_class.data_size != 2:
+            raise Exception("BlindEntity only supports two word data size: {}".format(modbus_class))
+
         self.gateway.mqtt_subscribe(self.mqtt_topic("set"), self.on_mqtt_set)
         self.gateway.mqtt_subscribe(self.mqtt_topic("config"), self.on_mqtt_config)
 
