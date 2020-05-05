@@ -19,7 +19,7 @@ logger = logging.getLogger('gateway')
 logger.setLevel(logging.DEBUG)
 
 # MODBUS
-modbus_udp_client = ModbusUdpClient(config.MODBUS_SERVER_HOST)
+modbus_udp_client = ModbusUdpClient(config.MODBUS_SERVER_HOST, timeout=3)
 modbus_tcp_client = ModbusTcpClient(config.MODBUS_SERVER_HOST)
 
 # MQTT
