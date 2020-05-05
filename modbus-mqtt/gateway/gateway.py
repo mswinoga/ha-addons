@@ -61,17 +61,31 @@ def modbus_write_registers(address, data):
         request = WriteSingleRegisterRequest(address, data)
     modbus_execute(request)
 
+class ModbusNotAvailableException(Exception):
+    pass
+
 class Gateway(entity.GatewayInterface):
     
     def __init__(self):
         super(Gateway, self).__init__()
 
         # state init
+        self.entity_sets = []
         self.processors = []
+        self.modbus_available = False
 
         # mqtt init
         logger.debug("gateway sending availability message")
+
+    def gateway_available(self):
         mqtt_client.publish(config.MQTT_AVAILABILITY_TOPIC, "online")
+
+    def gateway_unavailable(self):
+        # push the unavailability message
+        mqtt_client.publish(config.MQTT_AVAILABILITY_TOPIC, "offline")
+
+        # reset all entities
+        [ e.reset() for eset in self.entity_sets for e in eset ]
 
     # GatewayInterface
     def mqtt_publish(self, topic, payload, retain=False):
@@ -108,12 +122,18 @@ class Gateway(entity.GatewayInterface):
 
             # get the values via modbus 
             if data_type == entity.TYPE_COIL:
-                values = modbus_udp_client.read_coils(start_address, data_count).bits
+                result = modbus_udp_client.read_coils(start_address, data_count)
+                if result.isError():
+                    raise ModbusNotAvailableException()
+                values = result.bits
             elif data_type == entity.TYPE_REGISTER:
-                values = modbus_udp_client.read_holding_registers(start_address, data_count).registers
+                result = modbus_udp_client.read_holding_registers(start_address, data_count)
+                if result.isError():
+                    raise ModbusNotAvailableException()
+                values = result.registers
             else:
                 raise Exception("data type not supported: {}".format(data_type))
-            
+
             # process entities
             idx = 0
             for e in entities:
@@ -128,7 +148,27 @@ class Gateway(entity.GatewayInterface):
     def register_entity_set(self, modbus_class: entity.ModbusClass, entity_type, item_count, poll_delay_ms=0):
         logger.debug("registering modbus_class={}, entity_type={}, item_count={}".format(modbus_class, entity_type, item_count))
         entities = [entity_type(self, modbus_class, idx) for idx in range(0, item_count)]
+        self.entity_sets.append(entities)
         self.processors.append( (0, partial(self.__process_entities, entities, poll_delay_ms)) )
 
     def modbus_step(self):
-        self.processors = [(step(ts), step) for ts, step in self.processors]
+        try:
+            if self.modbus_available == False:
+                response = modbus_udp_client.read_coils(0, 1)
+                if response.isError():
+                    raise ModbusNotAvailableException()
+
+                # modbus server is back
+                self.gateway_available()
+                self.modbus_available = True
+                logger.info("modbus back online, gateway operational")
+
+            self.processors = [(step(ts), step) for ts, step in self.processors]
+        except ModbusNotAvailableException:
+            logger.info("modbus not available, reconnecting in 2s")
+            if self.modbus_available == True:
+                self.gateway_unavailable()
+                self.modbus_available = False
+            time.sleep(2)
+                
+
