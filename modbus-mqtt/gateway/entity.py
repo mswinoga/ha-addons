@@ -428,6 +428,7 @@ class BlindEntity(Entity):
     def discovery_payload(self):
         return json.dumps({
                 "~": self.mqtt_topic_base,
+                "device_class": "shutter",
                 "name": "{} {}".format(self.discovery_component, self.modbus_idx),
                 "unique_id": self.discovery_uid,
                 "availability_topic": MQTT_AVAILABILITY_TOPIC,
