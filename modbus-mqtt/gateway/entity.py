@@ -366,7 +366,7 @@ class BlindEntity(Entity):
             elif payload == "CLOSE":
                 value = 0 | 0x80
             elif payload == "STOP":
-                value = self.target & 0x7F
+                value = 0 & 0x7F
             else:
                 logger.warn("BlindEntity operation not supported: {}".format(payload))
                 return
