@@ -4,8 +4,8 @@ FROM $BUILD_FROM
 ENV LANG C.UTF-8
 
 # Install requirements for add-on
-RUN apt install python3 python3-pip
-RUN pip3 install pymodbus paho-mqtt
+RUN apk add --no-cache py3-pip python3
+RUN pip install pymodbus paho-mqtt
 
 # Python 3 HTTP Server serves the current working dir
 # So let's set it to our add-on persistent data directory.
