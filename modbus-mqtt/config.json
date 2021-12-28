@@ -1,6 +1,6 @@
 {
   "name": "Modbus-MQTT",
-  "version": "0.30",
+  "version": "0.31",
   "slug": "modbus-mqtt",
   "description": "Integrates modbus inputs/outputs with MQTT",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
@@ -8,7 +8,7 @@
   "boot": "auto",
   "services": ["mqtt:need"],
   "options": {
-    "modbus_host": "192.168.210.22",
+    "modbus_host": "192.168.40.10",
     "modbus_port": 502,
     "entity_sets": [
       {
@@ -44,17 +44,8 @@
         "entity_count": 64,
         "data_type": "coil",
         "read_only": false,
-        "read_offset": 512,
-        "poll_delay_ms": 750
-      },
-      {
-        "set_id": "light2",
-        "entity_type": "light_relay",
-        "entity_count": 48,
-        "data_type": "coil",
-        "read_only": false,
-        "read_offset": 616,
-        "write_offset": 104,
+        "read_offset": 12288,
+        "write_offset": 12288,
         "poll_delay_ms": 750
       }
     ]
