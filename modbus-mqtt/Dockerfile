@@ -4,8 +4,8 @@ FROM $BUILD_FROM
 ENV LANG C.UTF-8
 
 # Install requirements for add-on
-RUN apk add --no-cache python3
-RUN pip3 install --upgrade pip
+#RUN apk add --no-cache python3
+#RUN pip3 install --upgrade pip
 RUN pip3 install pymodbus paho-mqtt
 
 # Python 3 HTTP Server serves the current working dir
