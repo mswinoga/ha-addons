@@ -33,6 +33,12 @@ mqtt_client.will_set(config.MQTT_AVAILABILITY_TOPIC, "offline", retain=True)
 mqtt_client.connect(config.MQTT_HOST)
 mqtt_client.loop_start()
 
+def on_mqtt_connect(client, data, flags, rc):
+    logger.debug("mqtt_client connected")
+    mqtt_client.publish(config.MQTT_AVAILABILITY_TOPIC, "online")
+
+mqtt_client.on_connect = on_mqtt_connect
+
 def modbus_execute(request):
     if not modbus_tcp_client.is_socket_open():
         modbus_tcp_client.connect()
@@ -78,11 +84,11 @@ class Gateway(entity.GatewayInterface):
         logger.debug("gateway sending availability message")
 
     def gateway_available(self):
-        mqtt_client.publish(config.MQTT_AVAILABILITY_TOPIC, "online")
+        self.mqtt_publish(config.MQTT_AVAILABILITY_TOPIC, "online")
 
     def gateway_unavailable(self):
         # push the unavailability message
-        mqtt_client.publish(config.MQTT_AVAILABILITY_TOPIC, "offline")
+        self.mqtt_publish(config.MQTT_AVAILABILITY_TOPIC, "offline")
 
         # reset all entities
         [ e.reset() for eset in self.entity_sets for e in eset ]
