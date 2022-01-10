@@ -1,10 +1,10 @@
 {
   "name": "Modbus-MQTT",
-  "version": "0.40",
+  "version": "0.41",
   "slug": "modbus-mqtt",
   "description": "Integrates modbus inputs/outputs with MQTT",
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
-  "startup": "service",
+  "startup": "services",
   "boot": "auto",
   "services": ["mqtt:need"],
   "options": {
