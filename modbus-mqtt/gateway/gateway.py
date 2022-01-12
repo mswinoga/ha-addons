@@ -16,7 +16,7 @@ import config
 import entity
 
 logger = logging.getLogger('gateway')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 # MODBUS
 modbus_udp_client = ModbusUdpClient(config.MODBUS_SERVER_HOST, timeout=3)
@@ -34,7 +34,7 @@ mqtt_client.connect(config.MQTT_HOST)
 mqtt_client.loop_start()
 
 def on_mqtt_connect(client, data, flags, rc):
-    logger.debug("mqtt_client connected")
+    logger.info("mqtt_client connected")
     mqtt_client.publish(config.MQTT_AVAILABILITY_TOPIC, "online")
 
 mqtt_client.on_connect = on_mqtt_connect
@@ -50,7 +50,7 @@ def modbus_execute(request):
     return ret
 
 def modbus_write_coils(address, data):
-    logger.debug("modbus_write_coils({}, {})".format(address, data))
+    logger.info("modbus_write_coils({}, {})".format(address, data))
 
     if isinstance(data, list):
         request = WriteMultipleCoilsRequest(address, data)
@@ -59,7 +59,7 @@ def modbus_write_coils(address, data):
     modbus_execute(request)
 
 def modbus_write_registers(address, data):
-    logger.debug("modbus_write_registers({}, {})".format(address, data))
+    logger.info("modbus_write_registers({}, {})".format(address, data))
 
     if isinstance(data, list):
         request = WriteMultipleRegistersRequest(address, data)
@@ -81,7 +81,7 @@ class Gateway(entity.GatewayInterface):
         self.modbus_available = False
 
         # mqtt init
-        logger.debug("gateway sending availability message")
+        logger.info("gateway sending availability message")
 
     def gateway_available(self):
         self.mqtt_publish(config.MQTT_AVAILABILITY_TOPIC, "online")
@@ -94,7 +94,7 @@ class Gateway(entity.GatewayInterface):
         [ e.reset() for eset in self.entity_sets for e in eset ]
 
     # GatewayInterface
-    def mqtt_publish(self, topic, payload, retain=False):
+    def mqtt_publish(self, topic, payload, retain=True):
         logger.debug("mqtt publish on {}: {}".format(topic, payload))
         mqtt_client.publish(topic, payload, retain=retain)
 
@@ -152,7 +152,7 @@ class Gateway(entity.GatewayInterface):
             return previous_timestamp
 
     def register_entity_set(self, modbus_class: entity.ModbusClass, entity_type, item_count, poll_delay_ms=0):
-        logger.debug("registering modbus_class={}, entity_type={}, item_count={}".format(modbus_class, entity_type, item_count))
+        logger.info("registering modbus_class={}, entity_type={}, item_count={}".format(modbus_class, entity_type, item_count))
         entities = [entity_type(self, modbus_class, idx) for idx in range(0, item_count)]
         self.entity_sets.append(entities)
         self.processors.append( (0, partial(self.__process_entities, entities, poll_delay_ms)) )

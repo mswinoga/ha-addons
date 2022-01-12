@@ -5,7 +5,7 @@ from config import DISCOVERY_PREFIX, MQTT_AVAILABILITY_TOPIC
 from abc import ABC, ABCMeta, abstractmethod
 
 logger = logging.getLogger('entity')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 class GatewayInterface(metaclass=ABCMeta):
 
