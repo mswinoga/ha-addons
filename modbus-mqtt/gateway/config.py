@@ -25,7 +25,7 @@ MQTT_CLIENT_NAME = "modbus-gateway"
 
 DISCOVERY_PREFIX = CONFIG.get("discovery_prefix", "homeassistant")
 
-MODBUS_SERVER_HOST = CONFIG.get("modbus_host", "192.168.210.22")
+MODBUS_SERVER_HOST = CONFIG.get("modbus_host", "192.168.40.10")
 MODBUS_SERVER_PORT = int(CONFIG.get("modbus_port", 502))
 
 ENTITY_SETS = CONFIG.get("entity_sets", [])

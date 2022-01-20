@@ -3,6 +3,8 @@ from pymodbus.bit_read_message import *
 from pymodbus.bit_write_message import *
 from pymodbus.register_read_message import *
 from pymodbus.register_write_message import *
+from pymodbus.exceptions import ModbusException
+from pymodbus.constants import Defaults
 
 import paho.mqtt.client as mqtt
 
@@ -15,10 +17,16 @@ import time
 import config
 import entity
 
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger('gateway')
 logger.setLevel(logging.INFO)
 
 # MODBUS
+Defaults.RetryOnEmpty = True
+Defaults.Timeout = 5
+Defaults.Retries = 5
+Defaults.Reconnects = 5
+
 modbus_udp_client = ModbusUdpClient(config.MODBUS_SERVER_HOST, timeout=3)
 modbus_tcp_client = ModbusTcpClient(config.MODBUS_SERVER_HOST)
 
@@ -130,12 +138,12 @@ class Gateway(entity.GatewayInterface):
             if data_type == entity.TYPE_COIL:
                 result = modbus_udp_client.read_coils(start_address, data_count)
                 if result.isError():
-                    raise ModbusNotAvailableException()
+                    raise result
                 values = result.bits
             elif data_type == entity.TYPE_REGISTER:
                 result = modbus_udp_client.read_holding_registers(start_address, data_count)
                 if result.isError():
-                    raise ModbusNotAvailableException()
+                    raise result
                 values = result.registers
             else:
                 raise Exception("data type not supported: {}".format(data_type))
@@ -170,11 +178,12 @@ class Gateway(entity.GatewayInterface):
                 logger.info("modbus back online, gateway operational")
 
             self.processors = [(step(ts), step) for ts, step in self.processors]
-        except ModbusNotAvailableException:
-            logger.info("modbus not available, reconnecting in 2s")
+        except ModbusException as e:
+            logger.error("modbus not available, reconnecting in 500ms")
+            logger.error(e)
             if self.modbus_available == True:
                 self.gateway_unavailable()
                 self.modbus_available = False
-            time.sleep(2)
+            time.sleep(.5)
                 
 
