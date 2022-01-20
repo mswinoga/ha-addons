@@ -51,9 +51,18 @@ def modbus_execute(request):
     if not modbus_tcp_client.is_socket_open():
         modbus_tcp_client.connect()
 
-    ret = modbus_tcp_client.execute(request)
-    if ret.isError():
-        ret = modbus_tcp_client.execute(request) # retry
+    try:
+        ret = modbus_tcp_client.execute(request)
+        if ret.isError():
+            raise ret
+    except:
+        try:
+            ret = modbus_tcp_client.execute(request) # retry
+            if ret.isError():
+                raise ret
+        except e:
+            logging.error(e)
+            ret = None
 
     return ret
 
