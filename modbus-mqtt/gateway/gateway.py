@@ -23,7 +23,7 @@ logger.setLevel(logging.INFO)
 
 # MODBUS
 Defaults.RetryOnEmpty = True
-Defaults.Timeout = 5
+Defaults.Timeout = 0.2
 Defaults.Retries = 5
 Defaults.Reconnects = 5
 
