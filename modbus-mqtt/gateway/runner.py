@@ -7,7 +7,7 @@ import logging
 
 entity_classes = {
     "binary_input": BitEntity,
-    "button": BitEntity,
+    "button": ButtonEntity,
     "blind": BlindEntity,
     "light_relay": LightRelayEntity,
     "sensor": SensorEntity
