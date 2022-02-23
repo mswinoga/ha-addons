@@ -4,7 +4,7 @@
   "entity_sets": [
     {
       "set_id": "di",
-      "entity_type": "binary_input",
+      "entity_type": "button",
       "entity_count": 112,
       "data_type": "coil",
       "poll_delay_ms": 30 

@@ -278,9 +278,9 @@ class SensorEntity(Entity):
         super(SensorEntity, self).initialize()
 
         if self.modbus_class.data_type != TYPE_REGISTER:
-            raise Exception("BlindEntity only supports word data format")
+            raise Exception("SensorEntity only supports word data format")
         if self.modbus_class.data_size > 2:
-            raise Exception("BlindEntity only supports up to two word data size: {}".format(modbus_class))
+            raise Exception("SensorEntity only supports up to two word data size: {}".format(modbus_class))
 
         if not self.modbus_class.read_only:
             self.gateway.mqtt_subscribe(self.mqtt_topic("set"), self.on_mqtt_set)
@@ -339,6 +339,7 @@ class BlindEntity(Entity):
         self.target = 0
         self.t_up = None
         self.t_dn = None
+        self.state = "stopped"
 
     def initialize(self):
         super(BlindEntity, self).initialize()
@@ -404,12 +405,15 @@ class BlindEntity(Entity):
         new_t_up   = (data[1] & 0xFF00) >> 8
         new_t_dn   = (data[1] & 0x00FF)
 
+        check_state = False
         if self.pos != new_pos:
             publish_state(Entity.TOPIC_STATUS, new_pos)
+            check_state = True
             self.pos = new_pos
         
         if self.target != new_target:
             publish_state("target", new_target)
+            check_state = True
             self.target = new_target
 
         if self.t_up != new_t_up:
@@ -419,6 +423,30 @@ class BlindEntity(Entity):
         if self.t_dn != new_t_dn:
             publish_state("t_dn", new_t_dn)
             self.t_dn = new_t_dn
+
+        if check_state and self.pos is not None:
+            new_state = self.state
+            if self.target is None:
+                if self.state != 'stopped':
+                    new_state = 'stopped'
+            elif self.pos < self.target:
+                if self.state != 'opening':
+                    new_state = 'opening'
+            elif self.pos > self.target:
+                if self.state != 'closing':
+                    new_state = 'closing'
+            elif self.pos == self.target and self.pos == 0:
+                if self.state != 'closed':
+                    new_state = 'closed'
+            elif self.pos == self.target and self.pos == 100:
+                if self.state != 'opened':
+                    new_state = 'opened'
+            elif self.pos == self.target:
+                new_state = 'stopped'
+
+            if self.state != new_state:
+                self.state = new_state
+                publish_state('state', self.state)
 
     @property
     def discovery_component(self):
@@ -434,6 +462,7 @@ class BlindEntity(Entity):
                 "availability_topic": MQTT_AVAILABILITY_TOPIC,
                 "command_topic": "~/{}".format(Entity.TOPIC_SET),
                 "set_position_topic": "~/{}".format(Entity.TOPIC_SET),
+                "state_topic": "~/{}".format('state'),
                 "position_topic": "~/{}".format(Entity.TOPIC_STATUS)
             })
 
