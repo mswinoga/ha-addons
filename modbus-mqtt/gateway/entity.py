@@ -439,8 +439,8 @@ class BlindEntity(Entity):
                 if self.state != 'closed':
                     new_state = 'closed'
             elif self.pos == self.target and self.pos == 100:
-                if self.state != 'opened':
-                    new_state = 'opened'
+                if self.state != 'open':
+                    new_state = 'open'
             elif self.pos == self.target:
                 new_state = 'stopped'
 
