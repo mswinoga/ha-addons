@@ -266,6 +266,12 @@ class BitOutputEntity(BitEntity):
                 "state_topic": "~/{}".format(Entity.TOPIC_STATUS)
             })
 
+class RelayEntity(BitOutputEntity):
+
+    @property
+    def discovery_component(self):
+        return "relay"
+
 class LightRelayEntity(BitOutputEntity):
 
     @property

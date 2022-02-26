@@ -3,40 +3,13 @@
   "modbus_port": 502,
   "entity_sets": [
     {
-      "set_id": "di",
-      "entity_type": "button",
-      "entity_count": 112,
-      "data_type": "coil",
-      "poll_delay_ms": 30 
-    },
-    {
-      "set_id": "meter",
-      "entity_type": "sensor",
-      "entity_count": 8,
-      "data_type": "register",
-      "data_size": 2,
-      "read_offset": 12320,
-      "poll_delay_ms": 10000
-    },
-    {
-      "set_id": "blind",
-      "entity_type": "blind",
-      "entity_count": 20,
-      "data_type": "register",
-      "data_size": 2,
-      "read_only": false,
-      "read_offset": 12544,
-      "write_offset": 12544,
-      "poll_delay_ms": 750
-    },
-    {
-      "set_id": "light1",
-      "entity_type": "light_relay",
-      "entity_count": 48,
+      "set_id": "do",
+      "entity_type": "relay",
+      "entity_count": 5,
       "data_type": "coil",
       "read_only": false,
-      "read_offset": 12288,
-      "write_offset": 12288,
+      "read_offset": 12344,
+      "write_offset": 12344,
       "poll_delay_ms": 750
     }
   ]
