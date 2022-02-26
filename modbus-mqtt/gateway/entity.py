@@ -270,7 +270,7 @@ class RelayEntity(BitOutputEntity):
 
     @property
     def discovery_component(self):
-        return "relay"
+        return "switch"
 
 class LightRelayEntity(BitOutputEntity):
 

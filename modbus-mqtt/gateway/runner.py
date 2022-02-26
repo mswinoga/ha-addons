@@ -9,7 +9,7 @@ entity_classes = {
     "binary_input": BitEntity,
     "button": ButtonEntity,
     "blind": BlindEntity,
-    "relay": RelayEntity,
+    "switch": RelayEntity,
     "light_relay": LightRelayEntity,
     "sensor": SensorEntity
 }

@@ -4,8 +4,8 @@
   "entity_sets": [
     {
       "set_id": "do",
-      "entity_type": "relay",
-      "entity_count": 5,
+      "entity_type": "switch",
+      "entity_count": 8,
       "data_type": "coil",
       "read_only": false,
       "read_offset": 12344,
