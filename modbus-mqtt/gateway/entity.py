@@ -84,6 +84,18 @@ class Entity(ABC):
         self.modbus_class = modbus_class
         self.modbus_idx = modbus_idx
 
+        self.entity_name = self.entity_def.get("name")
+        uid=unidecode(self.entity_name.lower())
+        self.discovery_uid = re.sub(r"\s+", "_", uid)
+        self.device_class = self._get_from_def("device_class")
+        self.unit_of_measurement = self._get_from_def("unit_of_measurement")
+        cmp = self._get_from_def("component")
+        self.component = cmp if cmp else self.class_component
+        self.modbus_read_address = self.modbus_idx+self.modbus_class.read_offset
+        self.modbus_write_address = self.modbus_idx*self.modbus_class.data_size+self.modbus_class.write_offset
+        self.mqtt_topic_base = Entity.TOPIC_BASE.format(e=self)
+        self.discovery_topic = Entity.DISCOVERY_TOPIC_PATTERN.format(e=self) if self.component else None
+
         # state data
         self.reset()
 
@@ -112,52 +124,9 @@ class Entity(ABC):
         return self.entity_def.get(attr) if attr in self.entity_def else self.modbus_class.defaults.get(attr)
 
     @property
-    def entity_name(self):
-        return self.entity_def.get("name")
-
-    @property
-    def device_class(self):
-        return self._get_from_def("device_class")
-
-    @property
-    def unit_of_measurement(self):
-        return self._get_from_def("unit_of_measurement")
-
-    @property
-    def component(self):
-        cmp = self._get_from_def("component")
-        return cmp if cmp else self.class_component
-
-    @property
     def class_component(self):
         ''' default homeassistant component implemented by this entity class '''
         return None
-
-    @property
-    def modbus_read_address(self):
-        return self.modbus_idx+self.modbus_class.read_offset
-
-    @property
-    def modbus_write_address(self):
-        return self.modbus_idx*self.modbus_class.data_size+self.modbus_class.write_offset
-        
-    @property
-    def mqtt_topic_base(self):
-        return Entity.TOPIC_BASE.format(e=self)
-
-    @property
-    def discovery_topic(self):
-        # only register in HA components representing some component class of HA
-        # if component is None, MQTT is still used as GW to PLC
-        if self.component:
-            return Entity.DISCOVERY_TOPIC_PATTERN.format(e=self)
-        else:
-            return None
-
-    def discovery_uid(self):
-        DISCOVERY_UID_PATTERN = "{uid}_{e.modbus_class.name}"
-        uid=unidecode(self.entity_name.lower())
-        uid=re.sub(r"\s+", "_", uid)
 
     def discovery_payload(self):
         return {
