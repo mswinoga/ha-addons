@@ -172,8 +172,10 @@ class Gateway(entity.GatewayInterface):
 
         item_names = list(map(lambda i: i["name"] if i is not None and "name" in i else None, items))
         not_empty_names = [name for name in item_names if name]
-        if len(set(not_empty_names)) != len(not_empty_names):
-            raise Exception("names must be unique within a set_id")
+        seen = set()
+        dupes = [x for x in not_empty_names if x in seen or seen.add(x)]
+        if len(dupes) > 0:
+            raise Exception("names must be unique within set_id={}, duplicates: {}".format(modbus_class.name, dupes))
 
 
         entities = [entity_type(self, items[idx], modbus_class, idx) for idx in range(0, item_count)]
