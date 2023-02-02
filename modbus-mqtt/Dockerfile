@@ -5,7 +5,7 @@ ENV LANG C.UTF-8
 
 # Install requirements for add-on
 RUN apk add --no-cache py3-pip python3
-RUN pip install pymodbus paho-mqtt Unidecode
+RUN pip install pymodbus==2.5.3 paho-mqtt Unidecode
 
 # Python 3 HTTP Server serves the current working dir
 # So let's set it to our add-on persistent data directory.
