@@ -151,6 +151,10 @@ class Entity(ABC):
         return topic
 
     def on_modbus_data(self, timestamp, data):
+        # skip entities without names
+        if not self.entity_name:
+            return
+
         if len(data) != self.modbus_class.data_size:
             raise Exception("data lenght is supported: {}".format(data))
 

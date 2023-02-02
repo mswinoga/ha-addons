@@ -3,6 +3,7 @@ from gateway import Gateway
 from config import ENTITY_SETS, DEVICE
 
 import time
+from config import text_to_dict
 import logging
 
 entity_classes = {
@@ -26,10 +27,10 @@ gw = Gateway(DEVICE)
             read_only=eset.get("read_only", True),
             data_type=eset.get("data_type"),
             data_size=eset.get("data_size", 1),
-            defaults=eset.get("defaults", None)
+            defaults=text_to_dict(eset.get("defaults", ""))
         ),
         entity_classes.get(eset.get("entity_type"), None),
-        eset.get("entities", []),
+        [text_to_dict(item) for item in eset.get("entities", [])],
         eset.get("entity_count", 0),
         poll_delay_ms=eset.get("poll_delay_ms", 250)
     ) for eset in ENTITY_SETS

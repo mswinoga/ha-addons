@@ -43,6 +43,7 @@ def on_mqtt_connect(client, data, flags, rc):
 
 mqtt_client.on_connect = on_mqtt_connect
 
+
 def modbus_execute(request):
     if not modbus_tcp_client.is_socket_open():
         modbus_tcp_client.connect()

@@ -2,6 +2,18 @@ import logging
 import json
 import os
 
+def text_to_dict(txt):
+    items = txt.split(",")
+    rsp = {}
+    for item in items:
+        entry = item.split("=")
+        key = entry[0]
+        value = entry[1] if len(entry)>1 else ""
+        rsp.setdefault(key, value)
+
+    return rsp
+
+
 logger = logging.getLogger('config')
 logger.setLevel(logging.DEBUG)
 
