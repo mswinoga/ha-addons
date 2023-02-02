@@ -85,12 +85,13 @@ class Entity(ABC):
         self.modbus_idx = modbus_idx
 
         self.entity_name = self.entity_def.get("name")
-        uid=unidecode(self.entity_name.lower())
+        uid = unidecode("{}_{}".format(self.entity_name.lower(), self.modbus_class.name))
         self.discovery_uid = re.sub(r"\s+", "_", uid)
-        self.device_class = self._get_from_def("device_class")
-        self.unit_of_measurement = self._get_from_def("unit_of_measurement")
-        cmp = self._get_from_def("component")
+
+        attr = "component"
+        cmp = self.entity_def.get(attr) if attr in self.entity_def else self.modbus_class.defaults.get(attr)
         self.component = cmp if cmp else self.class_component
+
         self.modbus_read_address = self.modbus_idx+self.modbus_class.read_offset
         self.modbus_write_address = self.modbus_idx*self.modbus_class.data_size+self.modbus_class.write_offset
         self.mqtt_topic_base = Entity.TOPIC_BASE.format(e=self)
@@ -106,22 +107,27 @@ class Entity(ABC):
         self.state = None
 
     def initialize(self):
+
+        if not self.entity_name:
+            logger.info("skipping empty name in {} set".format(self.modbus_class.name))
+            return
+
         data_type = self.modbus_class.data_type
         if data_type not in [TYPE_REGISTER, TYPE_COIL]:
             raise Exception("Data class not supported: {}".format(data_type))
 
         # send discovery info to mqtt
         topic = self.discovery_topic
-        payload = self.discovery_payload()
+        payload = {}
+        payload.update(self.modbus_class.defaults)
+        payload.update(self.entity_def)
+        payload.update(self.discovery_payload())
         if topic is not None and payload is not None:
             self.gateway.mqtt_publish(
                 topic=topic,
                 payload=json.dumps({k:v for k,v in payload.items() if v is not None}),
                 retain=True
             )
-
-    def _get_from_def(self, attr):
-        return self.entity_def.get(attr) if attr in self.entity_def else self.modbus_class.defaults.get(attr)
 
     @property
     def class_component(self):
@@ -131,14 +137,12 @@ class Entity(ABC):
     def discovery_payload(self):
         return {
             "~": self.mqtt_topic_base,
-            "device": self.gateway.device_info,
-            "device_class": self.device_class,
             "name": self.entity_name,
+            "device": self.gateway.device_info,
             "unique_id": self.discovery_uid,
             "availability_topic": MQTT_AVAILABILITY_TOPIC,
             "command_topic": "~/{}".format(Entity.TOPIC_SET),
             "state_topic": "~/{}".format(Entity.TOPIC_STATE),
-            "unit_of_measurement": self.unit_of_measurement
         }
 
     def mqtt_topic(self, *args):

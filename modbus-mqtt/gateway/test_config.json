@@ -112,6 +112,10 @@
       {
         "set_id": "czujka",
         "entity_type": "binary_sensor",
+        "defaults": {
+          "payload_on": "OFF",
+          "payload_off": "ON"
+        },
         "entity_count": 8,
         "entities": [
           {"name": "Ruch łazienka parter", "device_class": "motion"},
@@ -180,9 +184,7 @@
       {
         "set_id": "light",
         "defaults": {
-          "component": "light",
-          "payload_on": "OFF",
-          "payload_off": "ON"
+          "component": "light"
         },
         "entity_type": "relay",
         "entity_count": 64,
