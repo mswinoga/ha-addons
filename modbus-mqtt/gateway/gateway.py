@@ -1,7 +1,5 @@
 from pymodbus.client.sync import ModbusTcpClient, ModbusUdpClient
-from pymodbus.bit_read_message import *
 from pymodbus.bit_write_message import *
-from pymodbus.register_read_message import *
 from pymodbus.register_write_message import *
 from pymodbus.exceptions import ModbusException
 from pymodbus.constants import Defaults
@@ -10,8 +8,6 @@ import paho.mqtt.client as mqtt
 
 from functools import partial
 import logging
-import threading
-import queue
 import time
 
 import config
@@ -89,9 +85,10 @@ class ModbusNotAvailableException(Exception):
 
 class Gateway(entity.GatewayInterface):
     
-    def __init__(self):
+    def __init__(self, device_info):
         super(Gateway, self).__init__()
 
+        self.device_info = device_info
         # state init
         self.entity_sets = []
         self.processors = []
@@ -168,9 +165,18 @@ class Gateway(entity.GatewayInterface):
         else:
             return previous_timestamp
 
-    def register_entity_set(self, modbus_class: entity.ModbusClass, entity_type, item_count, poll_delay_ms=0):
+    def register_entity_set(self, modbus_class: entity.ModbusClass, entity_type, items, item_count, poll_delay_ms=0):
         logger.info("registering modbus_class={}, entity_type={}, item_count={}".format(modbus_class, entity_type, item_count))
-        entities = [entity_type(self, modbus_class, idx) for idx in range(0, item_count)]
+        if len(items) != item_count:
+            raise Exception("number of names in item_names does not match item_count")
+
+        item_names = list(map(lambda i: i["name"] if i is not None and "name" in i else None, items))
+        not_empty_names = [name for name in item_names if name]
+        if len(set(not_empty_names)) != len(not_empty_names):
+            raise Exception("names must be unique within a set_id")
+
+
+        entities = [entity_type(self, items[idx], modbus_class, idx) for idx in range(0, item_count)]
         self.entity_sets.append(entities)
         self.processors.append( (0, partial(self.__process_entities, entities, poll_delay_ms)) )
 

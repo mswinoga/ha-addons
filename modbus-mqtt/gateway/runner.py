@@ -1,21 +1,20 @@
-from entity import ModbusClass, BlindEntity, BitEntity, ButtonEntity, RelayEntity, LightRelayEntity, SensorEntity
+from entity import ModbusClass, BlindEntity, BinarySensorEntity, ButtonEntity, RelayEntity, SensorEntity
 from gateway import Gateway
-from config import ENTITY_SETS
+from config import ENTITY_SETS, DEVICE
 
 import time
 import logging
 
 entity_classes = {
-    "binary_input": BitEntity,
+    "binary_sensor": BinarySensorEntity,
     "button": ButtonEntity,
     "blind": BlindEntity,
-    "switch": RelayEntity,
-    "light_relay": LightRelayEntity,
+    "relay": RelayEntity,
     "sensor": SensorEntity
 }
 
 # the gateway object
-gw = Gateway()
+gw = Gateway(DEVICE)
 
 # register all entity sets
 [
@@ -26,10 +25,12 @@ gw = Gateway()
             write_offset=eset.get("write_offset", 0),
             read_only=eset.get("read_only", True),
             data_type=eset.get("data_type"),
-            data_size=eset.get("data_size", 1)
+            data_size=eset.get("data_size", 1),
+            defaults=eset.get("defaults", None)
         ),
         entity_classes.get(eset.get("entity_type"), None),
-        eset.get("entity_count", 1),
+        eset.get("entities", []),
+        eset.get("entity_count", 0),
         poll_delay_ms=eset.get("poll_delay_ms", 250)
     ) for eset in ENTITY_SETS
 ]

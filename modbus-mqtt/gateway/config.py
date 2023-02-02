@@ -29,3 +29,5 @@ MODBUS_SERVER_HOST = CONFIG.get("modbus_host", "192.168.40.10")
 MODBUS_SERVER_PORT = int(CONFIG.get("modbus_port", 502))
 
 ENTITY_SETS = CONFIG.get("entity_sets", [])
+
+DEVICE = CONFIG.get("device")

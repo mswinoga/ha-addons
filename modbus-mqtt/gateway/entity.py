@@ -1,5 +1,7 @@
+import re
 import json
 import logging
+from unidecode import unidecode
 
 from config import DISCOVERY_PREFIX, MQTT_AVAILABILITY_TOPIC
 from abc import ABC, ABCMeta, abstractmethod
@@ -37,46 +39,48 @@ class ModbusClass(object):
             data_size=1,
             read_offset=0,
             write_offset=0,
-            read_only=True):
+            read_only=True,
+            defaults=None):
         self.name = name
         self.data_type = data_type
         self.data_size = data_size
         self.read_offset = read_offset
         self.write_offset = write_offset
         self.read_only = read_only
+        self.defaults = defaults if defaults else {}
 
     def __str__(self):
-        return "ModbusClass(name={}, data_type={}, data_size={}, read_offset={}, write_offset={}, read_only={})".format(
+        return "ModbusClass(name={}, data_type={}, data_size={}, read_offset={}, write_offset={}, read_only={}, defaults={})".format(
             self.name,
             self.data_type,
             self.data_size,
             self.read_offset,
             self.write_offset,
-            self.read_only
+            self.read_only,
+            self.defaults
         )
 
 
-    @abstractmethod
-    def mqtt_coordinate(self, address, slot_size=8):
-        mod = address//slot_size+1
-        rem = address%slot_size+1
-        return "{}-{}".format(mod, rem)
-
 class Entity(ABC):
 
-    TOPIC_BASE   = "plc/{e.modbus_class.name}/{e.mqtt_coordinate}"
-    TOPIC_STATUS = "status"
+    TOPIC_BASE   = "plc/{e.modbus_class.name}/{e.discovery_uid}"
+    TOPIC_STATE = "state"
     TOPIC_SET    = "set"
 
-    DISCOVERY_TOPIC_PATTERN = DISCOVERY_PREFIX+"/{e.discovery_component}/plc/{e.discovery_uid}/config"
-    DISCOVERY_UID_PATTERN = "{e.discovery_component}-{e.modbus_class.name}-{e.mqtt_coordinate}"
+    DISCOVERY_TOPIC_PATTERN = DISCOVERY_PREFIX+"/{e.component}/plc/{e.discovery_uid}/config"
 
     def __init__(self,
-            gateway: GatewayInterface,
+            gateway,
+            entity_def,
             modbus_class: ModbusClass,
             modbus_idx):
+        # do not process unnamed entities
+        if entity_def is None:
+            return
+
         # entity attributes
         self.gateway = gateway
+        self.entity_def = entity_def
         self.modbus_class = modbus_class
         self.modbus_idx = modbus_idx
 
@@ -96,13 +100,38 @@ class Entity(ABC):
 
         # send discovery info to mqtt
         topic = self.discovery_topic
-        payload = self.discovery_payload
+        payload = self.discovery_payload()
         if topic is not None and payload is not None:
             self.gateway.mqtt_publish(
                 topic=topic,
-                payload=payload,
+                payload=json.dumps({k:v for k,v in payload.items() if v is not None}),
                 retain=True
             )
+
+    def _get_from_def(self, attr):
+        return self.entity_def.get(attr) if attr in self.entity_def else self.modbus_class.defaults.get(attr)
+
+    @property
+    def entity_name(self):
+        return self.entity_def.get("name")
+
+    @property
+    def device_class(self):
+        return self._get_from_def("device_class")
+
+    @property
+    def unit_of_measurement(self):
+        return self._get_from_def("unit_of_measurement")
+
+    @property
+    def component(self):
+        cmp = self._get_from_def("component")
+        return cmp if cmp else self.class_component
+
+    @property
+    def class_component(self):
+        ''' default homeassistant component implemented by this entity class '''
+        return None
 
     @property
     def modbus_read_address(self):
@@ -113,29 +142,35 @@ class Entity(ABC):
         return self.modbus_idx*self.modbus_class.data_size+self.modbus_class.write_offset
         
     @property
-    def mqtt_coordinate(self):
-        return self.modbus_class.mqtt_coordinate(self.modbus_idx)
-
-    @property
     def mqtt_topic_base(self):
         return Entity.TOPIC_BASE.format(e=self)
 
     @property
     def discovery_topic(self):
-        return Entity.DISCOVERY_TOPIC_PATTERN.format(e=self)
+        # only register in HA components representing some component class of HA
+        # if component is None, MQTT is still used as GW to PLC
+        if self.component:
+            return Entity.DISCOVERY_TOPIC_PATTERN.format(e=self)
+        else:
+            return None
 
-    @property
     def discovery_uid(self):
-        return Entity.DISCOVERY_UID_PATTERN.format(e=self)
+        DISCOVERY_UID_PATTERN = "{uid}_{e.modbus_class.name}"
+        uid=unidecode(self.entity_name.lower())
+        uid=re.sub(r"\s+", "_", uid)
 
-    @property
-    def discovery_component(self):
-        ''' implement this method to send a discovery message to HA '''
-        return None
-
-    @property
     def discovery_payload(self):
-        return None
+        return {
+            "~": self.mqtt_topic_base,
+            "device": self.gateway.device_info,
+            "device_class": self.device_class,
+            "name": self.entity_name,
+            "unique_id": self.discovery_uid,
+            "availability_topic": MQTT_AVAILABILITY_TOPIC,
+            "command_topic": "~/{}".format(Entity.TOPIC_SET),
+            "state_topic": "~/{}".format(Entity.TOPIC_STATE),
+            "unit_of_measurement": self.unit_of_measurement
+        }
 
     def mqtt_topic(self, *args):
         topic = "/".join([self.mqtt_topic_base]+list(args))
@@ -165,7 +200,7 @@ class BitEntity(Entity):
             retain = self.modbus_class.read_only
             value = "ON" if new_val else "OFF"
             self.gateway.mqtt_publish(
-                self.mqtt_topic(Entity.TOPIC_STATUS),
+                self.mqtt_topic(Entity.TOPIC_STATE),
                 value,
                 retain=retain
             )
@@ -174,6 +209,12 @@ class BitEntity(Entity):
         # pass back the old value
         return old_val
 
+
+class BinarySensorEntity(BitEntity):
+
+    @property
+    def class_component(self):
+        return "binary_sensor"
 
 class ButtonEntity(BitEntity):
 
@@ -228,10 +269,10 @@ class ButtonEntity(BitEntity):
 
         return old_val
 
-class BitOutputEntity(BitEntity):
+class RelayEntity(BitEntity):
 
     def initialize(self):
-        super(BitOutputEntity, self).initialize()
+        super(RelayEntity, self).initialize()
         self.gateway.mqtt_subscribe(self.mqtt_topic("set"), self.on_mqtt_set)
 
     def on_mqtt_set(self, msg):
@@ -252,31 +293,9 @@ class BitOutputEntity(BitEntity):
             logging.info("{}: unrecognized command {}".format(msg.topic, msg.payload))
 
     @property
-    def discovery_component(self):
-        return None
-    
-    @property
-    def discovery_payload(self):
-        return json.dumps({
-                "~": self.mqtt_topic_base,
-                "name": "{} {}".format(self.discovery_component, self.modbus_idx),
-                "unique_id": self.discovery_uid,
-                "availability_topic": MQTT_AVAILABILITY_TOPIC,
-                "command_topic": "~/{}".format(Entity.TOPIC_SET),
-                "state_topic": "~/{}".format(Entity.TOPIC_STATUS)
-            })
-
-class RelayEntity(BitOutputEntity):
-
-    @property
-    def discovery_component(self):
+    def class_component(self):
         return "switch"
 
-class LightRelayEntity(BitOutputEntity):
-
-    @property
-    def discovery_component(self):
-        return "light"
 
 class SensorEntity(Entity):
 
@@ -286,7 +305,7 @@ class SensorEntity(Entity):
         if self.modbus_class.data_type != TYPE_REGISTER:
             raise Exception("SensorEntity only supports word data format")
         if self.modbus_class.data_size > 2:
-            raise Exception("SensorEntity only supports up to two word data size: {}".format(modbus_class))
+            raise Exception("SensorEntity only supports up to two word data size: {}".format(self.modbus_class))
 
         if not self.modbus_class.read_only:
             self.gateway.mqtt_subscribe(self.mqtt_topic("set"), self.on_mqtt_set)
@@ -313,27 +332,12 @@ class SensorEntity(Entity):
             value = (data[1]<<16)+data[0]
 
         if value != self.state:
-            self.gateway.mqtt_publish(self.mqtt_topic(Entity.TOPIC_STATUS), value)
+            self.gateway.mqtt_publish(self.mqtt_topic(Entity.TOPIC_STATE), value)
             self.state = value
 
     @property
-    def discovery_component(self):
+    def class_component(self):
         return "sensor"
-
-    @property
-    def discovery_payload(self):
-        return json.dumps({
-                "~": self.mqtt_topic_base,
-                "name": "{} {}".format(self.discovery_component, self.modbus_idx),
-                "unique_id": self.discovery_uid,
-                "availability_topic": MQTT_AVAILABILITY_TOPIC,
-                "state_topic": "~/{}".format(Entity.TOPIC_STATUS),
-                "unit_of_measurement": 'Wh'
-            })
-
-    @property
-    def mqtt_coordinate(self):
-        return self.modbus_class.mqtt_coordinate(self.modbus_idx, slot_size=8)
 
 
 class BlindEntity(Entity):
@@ -353,7 +357,7 @@ class BlindEntity(Entity):
         if self.modbus_class.data_type != TYPE_REGISTER:
             raise Exception("BlindEntity only supports word data format")
         if self.modbus_class.data_size != 2:
-            raise Exception("BlindEntity only supports two word data size: {}".format(modbus_class))
+            raise Exception("BlindEntity only supports two word data size: {}".format(self.modbus_class))
 
         self.gateway.mqtt_subscribe(self.mqtt_topic("set"), self.on_mqtt_set)
         self.gateway.mqtt_subscribe(self.mqtt_topic("config"), self.on_mqtt_config)
@@ -413,7 +417,7 @@ class BlindEntity(Entity):
 
         check_state = False
         if self.pos != new_pos:
-            publish_state(Entity.TOPIC_STATUS, new_pos)
+            publish_state(Entity.TOPIC_STATE, new_pos)
             check_state = True
             self.pos = new_pos
         
@@ -454,24 +458,13 @@ class BlindEntity(Entity):
                 self.state = new_state
                 publish_state('state', self.state)
 
-    @property
-    def discovery_component(self):
-        return "cover"
-
-    @property
     def discovery_payload(self):
-        return json.dumps({
-                "~": self.mqtt_topic_base,
-                "device_class": "shutter",
-                "name": "{} {}".format(self.discovery_component, self.modbus_idx),
-                "unique_id": self.discovery_uid,
-                "availability_topic": MQTT_AVAILABILITY_TOPIC,
-                "command_topic": "~/{}".format(Entity.TOPIC_SET),
-                "set_position_topic": "~/{}".format(Entity.TOPIC_SET),
-                "state_topic": "~/{}".format('state'),
-                "position_topic": "~/{}".format(Entity.TOPIC_STATUS)
-            })
+        return dict(
+            **super(BlindEntity, self).discovery_payload(),
+            set_position_topic="~/{}".format(Entity.TOPIC_SET),
+            position_topic="~/{}".format(Entity.TOPIC_STATE)
+        )
 
     @property
-    def mqtt_coordinate(self):
-        return self.modbus_class.mqtt_coordinate(self.modbus_idx, slot_size=4)
+    def class_component(self):
+        return "cover"
