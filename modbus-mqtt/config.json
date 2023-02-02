@@ -6,6 +6,7 @@
   "arch": ["armhf", "armv7", "aarch64", "amd64", "i386"],
   "startup": "services",
   "boot": "auto",
+  "init": false,
   "services": ["mqtt:need"],
   "options": {
     "device": {
