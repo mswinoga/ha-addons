@@ -85,7 +85,7 @@ class Entity(ABC):
         self.modbus_idx = modbus_idx
 
         self.entity_name = self.entity_def.get("name")
-        uid = unidecode("{}_{}".format(self.entity_name.lower(), self.modbus_class.name))
+        uid = unidecode(self.entity_name.lower())
         self.discovery_uid = re.sub(r"\s+", "_", uid)
 
         attr = "component"
@@ -109,7 +109,6 @@ class Entity(ABC):
     def initialize(self):
 
         if not self.entity_name:
-            logger.info("skipping empty name in {} set".format(self.modbus_class.name))
             return
 
         data_type = self.modbus_class.data_type

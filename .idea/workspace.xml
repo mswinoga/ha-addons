@@ -4,11 +4,7 @@
     <list default="true" id="3a711b36-4d17-47ca-bf8b-f78d372d5314" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/modbus-mqtt/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/modbus-mqtt/config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modbus-mqtt/gateway/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/modbus-mqtt/gateway/config.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/modbus-mqtt/gateway/entity.py" beforeDir="false" afterPath="$PROJECT_DIR$/modbus-mqtt/gateway/entity.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modbus-mqtt/gateway/gateway.py" beforeDir="false" afterPath="$PROJECT_DIR$/modbus-mqtt/gateway/gateway.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modbus-mqtt/gateway/runner.py" beforeDir="false" afterPath="$PROJECT_DIR$/modbus-mqtt/gateway/runner.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/modbus-mqtt/gateway/test_config.json" beforeDir="false" afterPath="$PROJECT_DIR$/modbus-mqtt/gateway/test_config.json" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -36,8 +32,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/modbus-mqtt/config.json">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
-              <caret line="9" selection-start-line="9" selection-end-line="9" />
+            <state relative-caret-position="30">
+              <caret line="2" column="17" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/modbus-mqtt/Dockerfile">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="105">
+              <caret line="7" column="30" selection-start-line="7" selection-start-column="30" selection-end-line="7" selection-end-column="30" />
             </state>
           </provider>
         </entry>
@@ -96,11 +101,11 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/modbus-mqtt/gateway/entity.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="144" column="60" selection-start-line="144" selection-start-column="60" selection-end-line="144" selection-end-column="60" />
+            <state relative-caret-position="117">
+              <caret line="65" column="34" selection-start-line="65" selection-start-column="34" selection-end-line="65" selection-end-column="34" />
               <folding>
                 <element signature="e#0#9#0" expanded="true" />
-                <marker date="1675350199785" expanded="true" signature="14063:14310" ph="..." />
+                <marker date="1675359014761" expanded="true" signature="13935:14182" ph="..." />
               </folding>
             </state>
           </provider>
@@ -138,13 +143,13 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/modbus-mqtt/Dockerfile" />
         <option value="$PROJECT_DIR$/modbus-mqtt/config.yaml" />
-        <option value="$PROJECT_DIR$/modbus-mqtt/config.json" />
         <option value="$PROJECT_DIR$/modbus-mqtt/gateway/test_config.json" />
         <option value="$PROJECT_DIR$/modbus-mqtt/gateway/gateway.py" />
         <option value="$PROJECT_DIR$/modbus-mqtt/gateway/runner.py" />
         <option value="$PROJECT_DIR$/modbus-mqtt/gateway/config.py" />
+        <option value="$PROJECT_DIR$/modbus-mqtt/Dockerfile" />
+        <option value="$PROJECT_DIR$/modbus-mqtt/config.json" />
         <option value="$PROJECT_DIR$/modbus-mqtt/gateway/entity.py" />
       </list>
     </option>
@@ -179,28 +184,6 @@
               <item name="modbus-mqtt" type="462c0819:PsiDirectoryNode" />
               <item name="gateway" type="462c0819:PsiDirectoryNode" />
             </path>
-            <path>
-              <item name="ha-addons" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-            </path>
-            <path>
-              <item name="ha-addons" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="&lt; Python 3.7 &gt;" type="70bed36:NamedLibraryElementNode" />
-            </path>
-            <path>
-              <item name="ha-addons" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="&lt; Python 3.7 &gt;" type="70bed36:NamedLibraryElementNode" />
-              <item name="python3.9" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="ha-addons" type="b2602c69:ProjectViewProjectNode" />
-              <item name="External Libraries" type="cb654da1:ExternalLibrariesNode" />
-              <item name="&lt; Python 3.7 &gt;" type="70bed36:NamedLibraryElementNode" />
-              <item name="python3.9" type="462c0819:PsiDirectoryNode" />
-              <item name="json" type="462c0819:PsiDirectoryNode" />
-            </path>
           </expand>
           <select />
         </subPane>
@@ -211,7 +194,7 @@
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="aspect.path.notification.shown" value="true" />
-    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1675350224391" />
+    <property name="com.android.tools.idea.instantapp.provision.ProvisionBeforeRunTaskProvider.myTimeStamp" value="1675351318184" />
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="project.structure.last.edited" value="SDKs" />
@@ -383,12 +366,12 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1674909824206</updated>
-      <workItem from="1674909829897" duration="58906000" />
+      <workItem from="1674909829897" duration="60808000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="58906000" />
+    <option name="totallyTimeSpent" value="60808000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="312" y="38" width="1200" height="944" extended-state="0" />
@@ -399,7 +382,7 @@
       <window_info id="Favorites" side_tool="true" />
       <window_info id="Capture Tool" />
       <window_info id="Image Layers" />
-      <window_info content_ui="combo" id="Project" order="0" weight="0.24956822" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.24956822" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info anchor="bottom" id="Graph Database Console" />
       <window_info anchor="bottom" id="Terminal" />
@@ -409,7 +392,7 @@
       <window_info anchor="bottom" id="Docker" show_stripe_button="false" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32978722" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.32978722" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.3995272" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -476,7 +459,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/modbus-mqtt/gateway/entity.py</url>
-          <line>331</line>
+          <line>330</line>
           <option name="timeStamp" value="9" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -514,13 +497,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/modbus-mqtt/Dockerfile">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="19" selection-start-line="19" selection-end-line="19" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/repository.json">
       <provider selected="true" editor-type-id="text-editor" />
     </entry>
@@ -535,13 +511,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="120">
           <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/modbus-mqtt/config.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" selection-start-line="9" selection-end-line="9" />
         </state>
       </provider>
     </entry>
@@ -596,13 +565,27 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/modbus-mqtt/Dockerfile">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="30" selection-start-line="7" selection-start-column="30" selection-end-line="7" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/modbus-mqtt/config.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="17" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/modbus-mqtt/gateway/entity.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="144" column="60" selection-start-line="144" selection-start-column="60" selection-end-line="144" selection-end-column="60" />
+        <state relative-caret-position="117">
+          <caret line="65" column="34" selection-start-line="65" selection-start-column="34" selection-end-line="65" selection-end-column="34" />
           <folding>
             <element signature="e#0#9#0" expanded="true" />
-            <marker date="1675350199785" expanded="true" signature="14063:14310" ph="..." />
+            <marker date="1675359014761" expanded="true" signature="13935:14182" ph="..." />
           </folding>
         </state>
       </provider>
