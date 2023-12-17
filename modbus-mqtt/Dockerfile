@@ -10,7 +10,7 @@ WORKDIR /data
 # Install requirements for add-on
 RUN apk add --no-cache py3-pip python3
 RUN python3 -m venv /data
-RUN . /data/bin/activate
+ENV PATH="/data/bin:$PATH"
 RUN pip install pymodbus==3.6.2 paho-mqtt Unidecode
 
 # Copy data for add-on
