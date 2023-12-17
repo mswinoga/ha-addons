@@ -3,15 +3,15 @@ FROM $BUILD_FROM
 
 ENV LANG C.UTF-8
 
+# Install requirements for add-on
+RUN apk add --no-cache py3-pip python3
+RUN mkdir /venv && python3 -m venv /venv
+ENV PATH="/venv/bin:$PATH"
+RUN pip install pymodbus==3.6.2 paho-mqtt Unidecode
+
 # Python 3 HTTP Server serves the current working dir
 # So let's set it to our add-on persistent data directory.
 WORKDIR /data
-
-# Install requirements for add-on
-RUN apk add --no-cache py3-pip python3
-RUN python3 -m venv /data
-ENV PATH="/data/bin:$PATH"
-RUN pip install pymodbus==3.6.2 paho-mqtt Unidecode
 
 # Copy data for add-on
 COPY run.sh /
