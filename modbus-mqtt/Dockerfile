@@ -4,10 +4,10 @@ FROM $BUILD_FROM
 ENV LANG C.UTF-8
 
 # Install requirements for add-on
-RUN apk add --no-cache py3-pip python3
-RUN pip3 install pymodbus==3.6.2
-RUN pip3 install paho-mqtt
-RUN pip3 install Unidecode
+#RUN apk add --no-cache py3-pip python3
+RUN python3 -m venv /data
+RUN . /data/bin/activate
+RUN pip install pymodbus==3.6.2 paho-mqtt Unidecode
 
 # Python 3 HTTP Server serves the current working dir
 # So let's set it to our add-on persistent data directory.
