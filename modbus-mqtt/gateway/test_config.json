@@ -243,6 +243,36 @@
       "read_offset": 12288,
       "write_offset": 12288,
       "poll_delay_ms": 750
+    },
+    {
+      "set_id": "switch",
+      "defaults": "component=switch",
+      "entity_type": "relay",
+      "entity_count": 16,
+      "entities": [
+        "name=Brama garażowa,component=button",
+        "name=",
+        "name=",
+        "name=",
+        "name=",
+        "name=",
+        "name=",
+        "name=",
+
+        "name=",
+        "name=",
+        "name=",
+        "name=",
+        "name=",
+        "name=",
+        "name=",
+        "name="
+      ],
+      "data_type": "coil",
+      "read_only": false,
+      "read_offset": 12392,
+      "write_offset": 12392,
+      "poll_delay_ms": 500
     }
   ]
 }
