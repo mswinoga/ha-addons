@@ -137,7 +137,7 @@ class Entity(ABC):
         return {
             "~": self.mqtt_topic_base,
             "name": self.entity_name,
-            "device": self.gateway.device_info,
+            # "device": self.gateway.device_info,
             "unique_id": self.discovery_uid,
             "availability_topic": MQTT_AVAILABILITY_TOPIC,
             "command_topic": "~/{}".format(Entity.TOPIC_SET),
