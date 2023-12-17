@@ -8,7 +8,7 @@ ENV LANG C.UTF-8
 WORKDIR /data
 
 # Install requirements for add-on
-#RUN apk add --no-cache py3-pip python3
+RUN apk add --no-cache py3-pip python3
 RUN python3 -m venv /data
 RUN . /data/bin/activate
 RUN pip install pymodbus==3.6.2 paho-mqtt Unidecode
