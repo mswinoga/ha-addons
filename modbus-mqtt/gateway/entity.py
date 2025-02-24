@@ -393,7 +393,7 @@ class BlindEntity(Entity):
 
         check_state = False
         if self.pos != new_pos:
-            publish_state(Entity.TOPIC_STATE, new_pos)
+            publish_state('position', new_pos)
             check_state = True
             self.pos = new_pos
         
@@ -438,7 +438,7 @@ class BlindEntity(Entity):
         return dict(
             **super(BlindEntity, self).discovery_payload(),
             set_position_topic="~/{}".format(Entity.TOPIC_SET),
-            position_topic="~/{}".format(Entity.TOPIC_STATE)
+            position_topic="~/{}".format('position')
         )
 
     @property
