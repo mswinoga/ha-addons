@@ -8,6 +8,7 @@
   "boot": "auto",
   "init": false,
   "services": ["mqtt:need"],
+  "hassio_api": true,
   "options": {
     "device": {
       "identifiers": "Wago PLC",
