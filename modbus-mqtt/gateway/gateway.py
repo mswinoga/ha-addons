@@ -27,7 +27,7 @@ modbus_udp_client = ModbusUdpClient(config.MODBUS_SERVER_HOST, timeout=3)
 modbus_tcp_client = ModbusTcpClient(config.MODBUS_SERVER_HOST)
 
 # MQTT
-mqtt_client = mqtt.Client(mqtt_client.CallbackAPIVersion.VERSION1, config.MQTT_CLIENT_NAME)
+mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION1, config.MQTT_CLIENT_NAME)
 mqtt_client.username_pw_set(username=config.MQTT_USER, password=config.MQTT_PASSWORD)
 
 # last will
